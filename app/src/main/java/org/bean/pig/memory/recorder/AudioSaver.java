@@ -11,6 +11,7 @@ import org.bean.pig.memory.App;
 import org.bean.pig.memory.R;
 import org.bean.pig.memory.content.ContentStore;
 import org.bean.pig.memory.util.FileUtil;
+import org.bean.pig.memory.util.Regular;
 import org.bean.pig.memory.util.ThreadUtil;
 import org.bean.pig.memory.util.ToastUtil;
 import rx.Observable;
@@ -18,7 +19,6 @@ import rx.Subscriber;
 import rx.functions.Action1;
 
 import java.io.File;
-import java.util.regex.Pattern;
 
 /**
  * Created by liuyulong@yixin.im on 2016-6-20.
@@ -34,10 +34,9 @@ public class AudioSaver {
     }
 
     public static Observable<String> getDefaultFileName() {
-        final String defaultName = App.get().getString(R.string.default_file_name);
-        final Pattern pattern = Pattern.compile("^" + defaultName + "\\d*");
+        final String defaultName = App.get().getString(R.string.default_audio_file_name);
         return Observable.just(ContentStore.Folder.Audio.get())
-                .compose(FileUtil.filterFileNames(pattern))
+                .compose(FileUtil.filterFileNames(Regular.audioFileName()))
                 .compose(FileUtil.genFileName(defaultName));
     }
 
@@ -62,18 +61,20 @@ public class AudioSaver {
     }
 
     public void save() {
-        getDefaultFileName().compose(ThreadUtil.<String>ioui()).subscribe(new Action1<String>() {
-            @Override
-            public void call(String name) {
-                showSaveDialog(name);
-            }
-        });
+        getDefaultFileName()
+                .compose(ThreadUtil.<String>ioui())
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String name) {
+                        showSaveDialog(name);
+                    }
+                });
 
     }
 
     private void showSaveDialog(String name) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle(R.string.save);
+        builder.setTitle(R.string.save_audio_dialog_title);
         View view = LayoutInflater.from(App.get()).inflate(R.layout.save_name_edit, null);
         final EditText fileName = ButterKnife.findById(view, R.id.file_name);
         fileName.setText(name);

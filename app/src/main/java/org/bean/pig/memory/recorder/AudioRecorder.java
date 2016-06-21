@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AudioRecorder {
 
+    private static final int UPDATE_INTERVAL = 100;
+
     private Context mContext;
 
     private MediaRecorder mRecorder;
@@ -80,19 +82,14 @@ public class AudioRecorder {
     }
 
     private void startUpdate() {
-        Subscription s = Observable.interval(100, TimeUnit.MILLISECONDS).subscribe(new Action1<Long>() {
-            @Override
-            public void call(Long aLong) {
-                mDuration = aLong * 100;
-            }
-        });
-        mSubscriptionList.add(s);
-        s = Observable.interval(100, TimeUnit.MILLISECONDS).flatMap(new Func1<Long, Observable<AudioRecorder>>() {
-            @Override
-            public Observable<AudioRecorder> call(Long aLong) {
-                return Observable.just(AudioRecorder.this);
-            }
-        }).compose(ThreadUtil.<AudioRecorder>ioui()).subscribe(mUpdateSubject);
+        Subscription s = Observable.interval(UPDATE_INTERVAL, TimeUnit.MILLISECONDS)
+                .flatMap(new Func1<Long, Observable<AudioRecorder>>() {
+                    @Override
+                    public Observable<AudioRecorder> call(Long count) {
+                        mDuration = count * UPDATE_INTERVAL;
+                        return Observable.just(AudioRecorder.this);
+                    }
+                }).compose(ThreadUtil.<AudioRecorder>ioui()).subscribe(mUpdateSubject);
         mSubscriptionList.add(s);
     }
 

@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">PigM</string>
-    <string name="save">保存</string>
+    <string name="save_audio_dialog_title">改名儿</string>
+    <string name="save">搁这</string>
     <string name="save_file_name_hint">保存的文件名</string>
-    <string name="delete">删除</string>
-    <string name="grant_record_fail">给我录音的权限，你个小婊砸！</string>
-    <string name="default_file_name">记忆碎片</string>
-    <string name="save_success">保存成功</string>
-    <string name="save_fail">保存失败</string>
+    <string name="delete">扔喽</string>
+    <string name="grant_record_fail">给我录音权限，你个小婊砸！</string>
+    <string name="default_audio_file_name">记忆碎片</string>
+    <string name="save_success">放好了</string>
+    <string name="save_fail">去龟孙，不着咋就坏了</string>
 </resources>
