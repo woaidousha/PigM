@@ -79,6 +79,7 @@ public class AudioSaver {
         final EditText fileName = ButterKnife.findById(view, R.id.file_name);
         fileName.setText(name);
         builder.setView(view);
+        builder.setCancelable(false);
         builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
