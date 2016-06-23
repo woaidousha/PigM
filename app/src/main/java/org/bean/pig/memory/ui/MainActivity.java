@@ -3,7 +3,6 @@ package org.bean.pig.memory.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
-import butterknife.ButterKnife;
 import com.jakewharton.rxbinding.view.RxView;
 import com.orhanobut.logger.Logger;
 import org.bean.pig.memory.R;
@@ -42,31 +41,34 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     ToastUtil.show(R.string.grant_record_fail);
                     return;
                 }
-                if (mRecorder.isRecording()) {
-                    mRecorder.stop();
-                } else {
-                    mRecorder.start();
-                }
-            }
-        });
-
-        mRecorder.getStateSubject().subscribe(new Action1<AudioRecorder.State>() {
-            @Override
-            public void call(AudioRecorder.State state) {
-                vm().setRecordstate(state);
+                toggleRecord();
             }
         });
     }
 
     public void init() {
-        ButterKnife.bind(this);
         mRecorder = new AudioRecorder(this);
 
         mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
 
-        vm().mainTabPager.setAdapter(mPagerAdapter);
+        vm().setPagerAdapter(mPagerAdapter);
+        vm().executePendingBindings();
         vm().viewpagertab.setViewPager(vm().mainTabPager);
 
         addListener();
+    }
+
+    private void toggleRecord() {
+        if (mRecorder.isRecording()) {
+            mRecorder.stop();
+        } else {
+            mRecorder.start();
+            mRecorder.getStateSubject().subscribe(new Action1<AudioRecorder.State>() {
+                @Override
+                public void call(AudioRecorder.State state) {
+                    vm().setRecordstate(state);
+                }
+            });
+        }
     }
 }

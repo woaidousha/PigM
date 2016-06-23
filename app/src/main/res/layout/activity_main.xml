@@ -8,6 +8,7 @@
 
         <import type="android.view.View"/>
         <import type="org.bean.pig.memory.recorder.AudioRecorder.State" alias="AudioRecorderState"/>
+        <import type="android.support.v4.view.PagerAdapter"/>
 
         <variable
             name="playing"
@@ -16,6 +17,10 @@
         <variable
             name="recordstate"
             type="org.bean.pig.memory.recorder.AudioRecorder.State"/>
+
+        <variable
+            name="pagerAdapter"
+            type="android.support.v4.view.PagerAdapter"/>
     </data>
 
     <RelativeLayout
@@ -99,6 +104,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/main_title_bar"
             android:layout_above="@id/main_bottom_bar"
+            app:view_pager_adapter="@{pagerAdapter}"
             tools:context="im.yixin.activity.MainTabActivity"/>
 
     </RelativeLayout>
