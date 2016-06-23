@@ -8,4 +8,8 @@
     <string name="default_audio_file_name">记忆碎片</string>
     <string name="save_success">放好了</string>
     <string name="save_fail">去龟孙，不着咋就坏了</string>
+    <string name="main_tab_tips">标签</string>
+    <string name="main_tab_calendar">日历</string>
+    <string name="main_tab_timeline">时间轴</string>
+    <string name="main_tab_size">大小</string>
 </resources>

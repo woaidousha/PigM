@@ -1,36 +1,40 @@
 package org.bean.pig.memory.ui;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
-import android.widget.TextView;
-import butterknife.Bind;
+import android.support.annotation.Nullable;
+import android.support.v4.view.PagerAdapter;
 import butterknife.ButterKnife;
 import com.jakewharton.rxbinding.view.RxView;
 import com.orhanobut.logger.Logger;
 import org.bean.pig.memory.R;
+import org.bean.pig.memory.base.BaseActivity;
+import org.bean.pig.memory.databinding.ActivityMainBinding;
 import org.bean.pig.memory.recorder.AudioRecorder;
+import org.bean.pig.memory.ui.fragment.MainPagerAdapter;
 import org.bean.pig.memory.util.Permission;
 import org.bean.pig.memory.util.ToastUtil;
 import rx.functions.Action1;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
-    @Bind(R.id.duration)
-    protected TextView mDuration;
-    @Bind(R.id.start)
-    protected ImageView mStart;
-    @Bind(R.id.stop)
-    protected ImageView mStop;
     private AudioRecorder mRecorder;
 
+    private PagerAdapter mPagerAdapter;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public int contentViewId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        mRecorder = new AudioRecorder(this);
-        RxView.clicks(mStart).compose(Permission.audio()).subscribe(new Action1<Boolean>() {
+        init();
+    }
+
+    private void addListener() {
+
+        RxView.clicks(vm().record).compose(Permission.audio()).subscribe(new Action1<Boolean>() {
             @Override
             public void call(Boolean grant) {
                 Logger.d("grant:" + grant);
@@ -38,35 +42,31 @@ public class MainActivity extends AppCompatActivity {
                     ToastUtil.show(R.string.grant_record_fail);
                     return;
                 }
-                mRecorder.start();
+                if (mRecorder.isRecording()) {
+                    mRecorder.stop();
+                } else {
+                    mRecorder.start();
+                }
             }
         });
-        RxView.clicks(mStop).subscribe(new Action1<Void>() {
-            @Override
-            public void call(Void aVoid) {
-                mRecorder.stop();
-            }
-        });
-        addListener();
-    }
 
-    private void addListener() {
         mRecorder.getStateSubject().subscribe(new Action1<AudioRecorder.State>() {
             @Override
             public void call(AudioRecorder.State state) {
-                updateState(state);
-            }
-        });
-        mRecorder.getUpdateSubject().subscribe(new Action1<AudioRecorder>() {
-            @Override
-            public void call(AudioRecorder audioRecorder) {
-                mDuration.setText(audioRecorder.duration() + "s");
+                vm().setRecordstate(state);
             }
         });
     }
 
-    public void updateState(AudioRecorder.State state) {
-        mStart.setEnabled(state != AudioRecorder.State.RECORDING);
-        mStop.setEnabled(state != AudioRecorder.State.NONE);
+    public void init() {
+        ButterKnife.bind(this);
+        mRecorder = new AudioRecorder(this);
+
+        mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
+
+        vm().mainTabPager.setAdapter(mPagerAdapter);
+        vm().viewpagertab.setViewPager(vm().mainTabPager);
+
+        addListener();
     }
 }
